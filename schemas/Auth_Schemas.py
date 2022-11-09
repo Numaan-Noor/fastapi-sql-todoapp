@@ -1,6 +1,6 @@
 from fastapi.security import OAuth2PasswordBearer
 from passlib.context import CryptContext
-from pydantic import BaseModel
+from pydantic import BaseModel, Extra
 from typing import Union
 
 
@@ -14,6 +14,9 @@ class signup(BaseModel):
 
 class UserInDB(signup):
     password: str
+
+    class config:
+        extra = Extra.forbid
 
 
 class Token(BaseModel):

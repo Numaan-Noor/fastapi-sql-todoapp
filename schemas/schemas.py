@@ -1,7 +1,6 @@
 from typing import Optional, TypeVar, Generic
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, validator, Extra
 from pydantic.generics import GenericModel
-
 
 T = TypeVar('T')
 
@@ -13,20 +12,23 @@ class Response(GenericModel, Generic[T]):
 
 
 class TodoRequestSchema(BaseModel):
-    title: Optional[str]
-    task: Optional[str]
+    title: str
+    task: str
 
     class Config:
-        orm_mode = True
+        extra = Extra.forbid
 
 
 class TodoAddSchema(TodoRequestSchema):
     id: str
-    user_id: Optional[str]
+    user_id: str
 
 
 class updateSchema(TodoRequestSchema):
     id: str
+
+    class config:
+        extra = Extra.forbid
 
 
 class Request_docs(BaseModel):

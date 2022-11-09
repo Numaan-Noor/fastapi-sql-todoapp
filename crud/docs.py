@@ -1,7 +1,7 @@
 import uuid
 from fastapi.security import HTTPAuthorizationCredentials
 from sqlalchemy.orm import Session
-import schemas.schemas
+from pydantic import validator
 from auth.Auth import todo_user
 from models.models import Docs
 
@@ -22,15 +22,24 @@ def get_docs_by_id(db: Session, document_id: str, _user_id: str):
         return err
 
 
-def create_docs(db: Session, Document: dict):
+# def create_docs(db: Session, Document: dict):
+#     uid = str(uuid.uuid4())
+#     Document.update(id=uid)
+#     todo = schemas.schemas.TodoAddSchema(**Document)
+#     _docs = Docs(**todo.dict())
+#     db.add(_docs)
+#     db.commit()
+#     db.refresh(_docs)
+#     return _docs
+
+def create_docs(db: Session, user_id: str, todo_data):
     uid = str(uuid.uuid4())
-    Document.update(id=uid)
-    todo = schemas.schemas.TodoAddSchema(**Document)
-    _docs = Docs(**todo.dict())
-    db.add(_docs)
+    todo = Docs(id=uid, title=todo_data.title,
+                task=todo_data.task, user_id=user_id)
+    db.add(todo)
     db.commit()
-    db.refresh(_docs)
-    return _docs
+    db.refresh(todo)
+    return todo
 
 
 def remove_docs(db: Session, document_id: str, user_id: str):
@@ -53,12 +62,3 @@ def update_docs(db: Session, document_id: str, title: str, task: str, user_id: s
         return _docs
     else:
         return None
-
-
-def data_token():
-    credentials = HTTPAuthorizationCredentials.credentials
-    data_allow = todo_user(credentials)
-    return data_allow
-
-
-

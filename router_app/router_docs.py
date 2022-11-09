@@ -23,16 +23,17 @@ async def app(
         db: Session = Depends(get_db),
 
 ):
-    schema_in = schema.dict()
-    schema_in.update({"user_id": user.get("id")})
-    _docs = docs.create_docs(db, schema_in)
+    # schema_in = schema.dict()
+    # schema_in.update({"user_id": user.get("id")})
+    _user_id = user.get("id")
+    _docs = docs.create_docs(db, _user_id, schema)
     return Response(status_code=200, message="Created", result=_docs).dict(exclude_none=True)
 
 
 @router.get("/all")
 async def app(
-    db: Session = Depends(get_db),
-    _user: dict = Depends(get_user_credentials),
+        db: Session = Depends(get_db),
+        _user: dict = Depends(get_user_credentials),
 ):
     _user_id = _user.get("id")
     _docs = docs.get_docs(db, _user_id)
@@ -76,6 +77,3 @@ async def app(id: str,
         return Response(status_code=400, message="Invalid token or id").dict()
     else:
         return Response(status_code=200, message="deleted", result=_docs).dict(exclude_none=True)
-
-
-
