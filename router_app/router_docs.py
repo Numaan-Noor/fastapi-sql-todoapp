@@ -38,7 +38,7 @@ async def app(
     _user_id = _user.get("id")
     _docs = docs.get_docs(db, _user_id)
     if not _docs:
-        return Response(status_code=400, message="Invalid token or id").dict()
+        return Response(status_code=400, message="No Data Found Or Invalid Token").dict()
     return Response(status_code=200, message="all data", result=_docs).dict(exclude_none=True)
 
 
@@ -51,8 +51,8 @@ async def app(
     _user_id = user.get("id")
     _docs = docs.get_docs_by_id(db, id, _user_id)
     if not _docs:
-        return Response(status_code=400, message="Invalid token or id").dict()
-    return Response(status_code=200, message="get by id", result=_docs).dict(exclude_none=True)
+        return Response(status_code=400, message="No Data Found Or Invalid Token").dict()
+    return Response(status_code=200, message="Get By Id", result=_docs).dict(exclude_none=True)
 
 
 @router.patch("/")
@@ -63,8 +63,8 @@ async def app(request: updateSchema,
     _docs = docs.update_docs(db, document_id=request.id, title=request.title,
                              task=request.task, user_id=user_id)
     if not _docs:
-        return Response(status_code=400, message="Invalid token or id").dict()
-    return Response(status_code=200, message="update", result=_docs).dict(exclude_none=True)
+        return Response(status_code=400, message="No Data Found Or Invalid Token").dict()
+    return Response(status_code=200, message="Updated", result=_docs).dict(exclude_none=True)
 
 
 @router.delete("/")
@@ -74,6 +74,6 @@ async def app(id: str,
     user_id = user.get("id")
     _docs = docs.remove_docs(db, document_id=id, user_id=user_id)
     if not _docs:
-        return Response(status_code=400, message="Invalid token or id").dict()
+        return Response(status_code=400, message="No Data Found Or Invalid Token").dict()
     else:
         return Response(status_code=200, message="deleted", result=_docs).dict(exclude_none=True)

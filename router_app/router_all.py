@@ -17,19 +17,42 @@ def get_db():
         db.close()
 
 
-@router.get("/all_data")
-async def app(
+@router.patch("/ ")
+async def Bookmark(
+        id: str,
         db: Session = Depends(get_db),
+        user: dict = Depends(get_user_credentials)
 ):
-    _docs = all_docs.get_all_docs(db)
-    return Response(status_code=200, message="all data", result=_docs).dict(exclude_none=True)
+    user_id = user.get("id")
+    _docs = all_docs.bookmark_docs(db, id, user_id)
+    if not _docs:
+        return Response(status_code=400, message="Invalid ID Or It Is Already Bookmarked").dict()
+    return Response(status_code=200, message="Changed", result=_docs).dict(exclude_none=True)
 
 
-@router.post("/")
-async def app(
-        schema: TodoRequestSchema,
+@router.patch("/")
+async def remove_bookmark(
+        id: str,
         db: Session = Depends(get_db),
-
+        user: dict = Depends(get_user_credentials)
 ):
-    _docs = docs.create_docs(db)
-    return Response(status_code=200, message="Created", result=_docs).dict(exclude_none=True)
+    user_id = user.get("id")
+    _docs = all_docs.un_docs(db, id, user_id)
+    if not _docs:
+        return Response(status_code=400, message="Invalid ID Or It Is Not Bookmarked").dict()
+    return Response(status_code=200, message="Changed", result=_docs).dict(exclude_none=True)
+
+
+@router.get("/Bookmarked")
+async def All_Bookmarked(
+        db: Session = Depends(get_db),
+        _user: dict = Depends(get_user_credentials),
+):
+    _user_id = _user.get("id")
+    _docs = all_docs.get_bookmark_docs(db, _user_id)
+    if not _docs:
+        return Response(status_code=400, message="Invalid token").dict()
+    return Response(status_code=200, message="Bookmarked data", result=_docs).dict(exclude_none=True)
+
+
+

@@ -7,11 +7,11 @@ from models.models import Docs
 
 
 def get_docs(db: Session, _user_id: str):
-    try:
-        response = db.query(Docs).filter(Docs.user_id == _user_id).all()
+    response = db.query(Docs).filter(Docs.user_id == _user_id).all()
+    if response:
         return response
-    except Exception as err:
-        return err
+    else:
+        return None
 
 
 def get_docs_by_id(db: Session, document_id: str, _user_id: str):

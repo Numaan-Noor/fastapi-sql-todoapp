@@ -1,30 +1,47 @@
 import uuid
-from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials, HTTPBasic
-from rest_framework.status import HTTP_401_UNAUTHORIZED
 from sqlalchemy.orm import Session
-from datetime import timedelta, datetime
-from typing import Union
-from fastapi import status, HTTPException, Depends, Request
-from jose import JWTError
-import uuid
-from fastapi.security import HTTPAuthorizationCredentials
-from sqlalchemy.orm import Session
-import schemas.schemas
-from auth.Auth import todo_user
-from models.models import Docs
+from models.models import Docs, Personal
 
 
 def get_all_docs(db: Session):
     response = db.query(Docs).all()
     return response
 
-# def create_docs(db: Session, Document: dict):
-#     uid = str(uuid.uuid4())
-#     Document.update(id=uid)
-#     todo = schemas.schemas.TodoAddSchema(**Document)
-#     _docs = Docs(**todo.dict())
-#     db.add(_docs)
-#     db.commit()
-#     db.refresh(_docs)
-#     return _docs
+
+def get_docs_by_id(db: Session, document_id: str, _user_id: str):
+    try:
+        response = db.query(Docs).filter(Docs.id == document_id, Docs.user_id == _user_id).first()
+        return response
+    except Exception as err:
+        return err
+
+
+def bookmark_docs(db: Session, id: str, user):
+    _docs = get_docs_by_id(db=db, document_id=id, _user_id=user)
+    if _docs:
+        _docs.bookmark = True
+        db.commit()
+        db.refresh(_docs)
+        return _docs
+    else:
+        return None
+
+
+def un_docs(db: Session, id: str, user):
+    _docs = get_docs_by_id(db=db, document_id=id, _user_id=user)
+    if _docs:
+        _docs.bookmark = False
+        db.commit()
+        db.refresh(_docs)
+        return _docs
+    else:
+        return None
+
+
+def get_bookmark_docs(db: Session, _user_id: str):
+    try:
+        response = db.query(Docs).filter(Docs.user_id == _user_id, Docs.bookmark == True).all()
+        return response
+    except Exception as err:
+        return err
 
