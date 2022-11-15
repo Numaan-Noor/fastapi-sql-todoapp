@@ -43,7 +43,7 @@ async def remove_bookmark(
     return Response(status_code=200, message="Changed", result=_docs).dict(exclude_none=True)
 
 
-@router.get("/Bookmarked")
+@router.get("/")
 async def All_Bookmarked(
         db: Session = Depends(get_db),
         _user: dict = Depends(get_user_credentials),
